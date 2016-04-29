@@ -5,7 +5,9 @@ MAINTAINER Miguel Angel Garcia <mgarcia.inf@gmail.com>
 # Environment
 ENV USER app
 ENV FOLDER /home/app/app
+ENV CODE_DIR $FOLDER
 ENV PACKAGE_LIST xdebug redis
+ENV FUNCTION api
 ENV EXTENSION_LIST bcmath calendar exif intl opcache pcntl \
     shmop sockets wddx zip bz2 gettext gmp mcrypt mysql mysqli pdo_mysql \
     readline recode xsl xdebug redis
@@ -30,10 +32,12 @@ RUN cd /usr/src/php/ext && pecl download $PACKAGE_LIST && \
     rm $PACKAGE*.tgz && mv $PACKAGE-* $PACKAGE; done
 
 COPY docker-php-ext-* /usr/local/bin/
+# Add docker entrypoint
+ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 # Install PHP extensions
-RUN chmod +x /usr/local/bin/docker-php-ext-* && sync \
-    && docker-php-ext-install -j$(nproc) $EXTENSION_LIST \
+RUN chmod +x /usr/local/bin/docker-php-ext-* /docker-entrypoint.sh \
+    && sync && docker-php-ext-install -j$(nproc) $EXTENSION_LIST \
     && echo "zend_extension=opcache.so"> /usr/local/etc/php/conf.d/opcache.ini
 
 # Install composer
@@ -52,4 +56,4 @@ COPY conf/php-fpm-5.6.conf /usr/local/etc/
 COPY conf/php.ini /usr/local/etc/php/php.ini
 
 EXPOSE 9000
-CMD ["php-fpm"]
+ENTRYPOINT ["docker-entrypoint.sh"]

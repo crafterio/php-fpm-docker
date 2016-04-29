@@ -6,6 +6,8 @@ MAINTAINER Miguel Angel Garcia <mgarcia.inf@gmail.com>
 ENV USER app
 ENV FOLDER /home/app/app
 ENV PACKAGE_LIST xdebug redis
+ENV FUNCTION cli
+ENV CODE_DIR $FOLDER
 ENV EXTENSION_LIST phpredis bcmath calendar exif intl opcache pcntl \
     shmop sockets wddx zip bz2 gettext gmp mcrypt mysqli pdo_mysql \
     readline recode xsl xdebug
@@ -33,10 +35,12 @@ RUN cd /usr/src/php/ext && pecl download $PACKAGE_LIST && \
     rm $PACKAGE*.tgz && mv $PACKAGE-* $PACKAGE; done
 
 COPY docker-php-ext-* /usr/local/bin/
+# Add docker entrypoint
+ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 # Install PHP extensions
-RUN chmod +x /usr/local/bin/docker-php-ext-* && sync \
-    && docker-php-ext-install -j$(nproc) $EXTENSION_LIST
+RUN chmod +x /usr/local/bin/docker-php-ext-* /docker-entrypoint.sh \
+    && sync && docker-php-ext-install -j$(nproc) $EXTENSION_LIST
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer \
@@ -51,4 +55,4 @@ RUN rm -rf /usr/src/php/ext/* /var/tmp/* \
 WORKDIR $FOLDER
 
 EXPOSE 9000
-CMD ["php", "-a"]
+ENTRYPOINT ["docker-entrypoint.sh"]
