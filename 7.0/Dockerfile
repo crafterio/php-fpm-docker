@@ -57,4 +57,4 @@ COPY conf/php-fpm-7.0.conf /usr/local/etc/
 COPY conf/php.ini /usr/local/etc/php/php.ini
 
 EXPOSE 9000
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

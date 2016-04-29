@@ -53,4 +53,4 @@ RUN rm -rf /usr/src/php/ext/* /var/tmp/* \
 WORKDIR $FOLDER
 
 EXPOSE 9000
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
