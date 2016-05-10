@@ -6,6 +6,10 @@ PRE_DIR="${CODE_DIR}/.crafter/scripts/${FUNCTION}/pre"
 OVERRIDE_DIR="${CODE_DIR}/.crafter/scripts/${FUNCTION}/override"
 POST_DIR="${CODE_DIR}/.crafter/scripts/${FUNCTION}/post"
 
+# Set GH token if defined in environment variables
+composer config -g github-oauth.github.com ${COMPOSER_TOKEN}
+
+
 # Update composer
 composer self-update
 
@@ -30,7 +34,7 @@ if [[ -d ${OVERRIDE_DIR} ]]; then
     done
   else
     # Find requirements
-    REQUIREMENTS=$(find ${CODE_DIR} -name composer.json -not -path vendor)
+    REQUIREMENTS=$(find ${CODE_DIR} -name composer.json -not -path "${CODE_DIR}/vendor/*")
 
     if [[ ! -z ${REQUIREMENTS} ]]; then
       cd ${CODE_DIR}
