@@ -57,5 +57,10 @@ fi
 if [[ ${FUNCTION} != "cli" ]]; then
   php-fpm
 else
+  if [[ -z ${CLI_COMMAND} ]]; then
+    while true; do
+      sleep 9999
+    done
+  fi
   ${CLI_COMMAND}
 fi
